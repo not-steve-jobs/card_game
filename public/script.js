@@ -1,8 +1,8 @@
-var socket = io();
+let socket = io();
 socket.on('createRoom', function(room) {
-    var item = document.createElement('h1');
+    let item = document.createElement('h1');
     console.log(room,444)
-     item.innerHTML = room.name;
+    item.innerHTML = room.name;
     document.body.appendChild(item);
     socket.emit('join', room);
 });

@@ -48,6 +48,15 @@ class Room {
                 return res.status(404).json({
                     message: 'Room not found'
                 });
+            } else if (room.now_gamer_count === room.max_gamer_count){
+                return res.status(406).json({
+                    message: 'This Room is Full'
+                });
+            } else {
+                room.now_gamer_count++;
+                if (room.now_gamer_count === room.max_gamer_count){
+                    room.possibility = false;
+                };
             };
 
             //Socket
@@ -55,7 +64,10 @@ class Room {
             io.to(room._id);
             io.emit('joinRoom',room._id);
 
-            return res.status(200).json(room);
+            // return res.status(200).json(room);
+            return res.render('joinRoom',{
+                room
+            })
         }  catch (e) {
             next(e);
         };
@@ -63,30 +75,6 @@ class Room {
 
     async delete (req, res, next) {
         try{
-            // io.on('connection', (socket) => {
-            //
-            //     // give each socket a random identifier so that we can determine who is who when
-            //     // we're sending messages back and forth!
-            //     socket.id = uuid();
-            //     console.log('a user connected');
-            //
-            //     /**
-            //      * Gets fired when a player leaves a room.
-            //      */
-            //     socket.on('leaveRoom', () => {
-            //         leaveRooms(socket);
-            //     });
-            //
-            //     /**
-            //      * Gets fired when a player disconnects from the server.
-            //      */
-            //     socket.on('disconnect', () => {
-            //         console.log('user disconnected');
-            //         leaveRooms(socket);
-            //     });
-            // });
-
-
             const { id } = req.params;
             const room = await roomModel.findById(id);
             if (!room){
@@ -111,28 +99,6 @@ class Room {
 
     async getAllRooms (req, res, next) {
       try{
-          // io.on('connection', (socket) => {
-          //     console.log(789)
-          //     // give each socket a random identifier so that we can determine who is who when
-          //     // we're sending messages back and forth!
-          //     socket.id = uuid();
-          //     console.log('a user connected');
-          //
-          //     /**
-          //      * Gets fired when someone wants to get the list of rooms. respond with the list of room names.
-          //      */
-          //     socket.on('getRoomNames', (data, callback) => {
-          //         const roomNames = [];
-          //         for (const id in rooms) {
-          //             const {name} = rooms[id];
-          //             const room = {name, id};
-          //             roomNames.push(room);
-          //         }
-          //
-          //         callback(roomNames);
-          //     });
-          // });
-
           const rooms = await roomModel.find({});
           // return res.status(200).json(rooms);
           return res.render('getAllRooms',{
@@ -145,23 +111,6 @@ class Room {
 
     async getRoom (req, res, next) {
         try{
-            // io.on('connection', (socket) => {
-            //
-            //     // give each socket a random identifier so that we can determine who is who when
-            //     // we're sending messages back and forth!
-            //     socket.id = uuid();
-            //     console.log('a user connected');
-            //
-            //     /**
-            //      * Gets fired when a player has joined a room.
-            //      */
-            //     socket.on('joinRoom', (roomId, callback) => {
-            //         const room = rooms[roomId];
-            //         joinRoom(socket, room);
-            //         callback();
-            //     });
-            // });
-
             const { id } = req.params;
             const room = await roomModel.findById(id);
             if (!room){
