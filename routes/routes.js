@@ -13,9 +13,10 @@ router.get('/confirm/:id', User.verify);
 
 //Room routes
 router.post('/create', auth, Room.create);
-router.delete('/delete/:id', auth, Room.delete);
-router.get('/getAllRooms', auth, Room.getAllRooms);
-router.get('/getRoom/:id', auth, Room.getRoom);
+router.delete('/delete/:id', Room.delete);
+router.get('/', Room.getAllRooms);
+router.get('/getRoom/:id', Room.getRoom);
+router.post('/joinRoom/:roomId', Room.joinRoom);
 
 
 module.exports = router;

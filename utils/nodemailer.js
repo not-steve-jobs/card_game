@@ -4,12 +4,18 @@ const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport(
     {
-        host: 'smtp.mail.ru',
-        port: 465,
-        secure: true, // true for 465, false for other ports
+        // host: 'smtp.mail.ru',
+        // port: 465,
+        // secure: true, // true for 465, false for other ports
+        // auth: {
+        //     user: 'sendmail.testovich@mail.ru',
+        //     pass: process.env.EMAIL_PASSWORD
+        // }
+        host: "smtp.mailtrap.io",
+        port: 2525,
         auth: {
-            user: 'sendmail.testovich@mail.ru',
-            pass: process.env.EMAIL_PASSWORD
+            user: "3a6c9f94a072bf",
+            pass: "333a73ed55c02b"
         }
     },
     {
