@@ -12,12 +12,12 @@ const PORT = process.env.PORT ?? 5000;
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-// next line is the money
-app.set('socketio', io);
-app.use(cors());
 
 //mongo connection
 require("./mongo/mongo");
+
+app.set('socketio', io);
+app.use(cors());
 
 // app.set('views', './views/')
 app.set('views', path.join(__dirname, '/views/'))

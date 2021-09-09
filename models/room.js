@@ -9,9 +9,9 @@ const roomSchema = new Schema({
         type: Number,
         required: true
     },
-    now_gamer_count: {
+    current_count: {
         type: Number,
-        default: 1
+        default: 0
     },
     created_date: {
         type: Date,

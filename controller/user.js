@@ -33,7 +33,7 @@ class User {
                 html: `<h1>Email Confirmation</h1>
                              <h2>Hello ${value.name}</h2>
                              <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-                             <a href=http://localhost:8080/api/confirm/${verifyToken}> Click here</a>
+                             <a href=http://localhost:8080/confirm/${verifyToken}> Click here</a>
                              </div>`,
             };
             sendMailer.mailer(mailOptions);
