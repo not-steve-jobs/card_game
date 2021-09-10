@@ -14,7 +14,7 @@
         <div style="display: inline-block; margin: 10px">
             <a href=joinRoom/<%=item._id%>><h1><%=item.name%></h1></a>
             <p>MAX: <%=item.max_gamer_count%></p>
-            <p id="count"><%=item.current_count%></p>
+            <p id=count-<%=item._id%>><%=item.current_count%></p>
         </div>
     <%})%>
 

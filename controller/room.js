@@ -6,7 +6,6 @@ const { roomValidate } = require('../validation/room');
 class Room {
     async create (req, res, next) {
       try{
-          const io = req.app.get('socketio');
           const {error, value} = roomValidate(req.body);
           if (error){
               logger.error('ValidationError', error.message);
@@ -21,7 +20,15 @@ class Room {
           });
           await room.save();
           logger.info('Room creat ended - - -');
+
           //Socket
+          const io = req.app.get('socketio');
+
+          // io.sockets.on('connection', function(socket) {
+          //
+          // });
+
+
           io.emit('createRoom', room);
           io.to(room._id);
           io.emit('joinRoom',room._id);
@@ -51,17 +58,20 @@ class Room {
             };
             //Socket
             const io = req.app.get('socketio');
-            io.sockets.emit('joinRoom',room._id);
-            io.sockets.to(room._id);
+            io.emit('joinRoom',room._id);
+            io.to(room._id);
+
             // console.log(io.engine.clientsCount)
 
-            io.sockets.on('connection', function (socket) {
+            io.on('connection', function (socket) {
                 console.log(`User ${socket.id} Connected...`);
+
                 socket.on('disconnect', function () {
-                    console.log(`User ${socket.id} Disconnected.!`);
-                    io.emit('leaveRoom', room._id)
-                });
+                    io.emit('fff', room)
+                    console.log('Socket disconnected: ' + socket.id)
+                }, room);
             });
+
             // return res.status(200).json(room);
             return res.render('joinRoom',{
                 room
