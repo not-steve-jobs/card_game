@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const routes = require('./routes/routes');
 const path = require('path');
+const {get,set} = require('./utils/cache')
+const roomModel = require('./models/room');
 
 const PORT = process.env.PORT ?? 5000;
 
@@ -16,7 +18,39 @@ const io = require('socket.io')(server);
 //mongo connection
 require("./mongo/mongo");
 
-app.set('socketio', io);
+
+io.on('connection', function (socket) {
+    app.set('socketio', socket);
+    logger.info(`${socket.id} Connected...`);
+    const currentRoom = get('currentRoom');
+    let length = get('length');
+
+    socket.on('disconnect', async function () {
+        if(length) {
+            length--;
+            if(currentRoom && currentRoom._id)
+            await roomModel.update({_id:currentRoom._id},{
+                current_count:length
+            })
+            socket.to(currentRoom._id).emit('leaveRoom',{
+                room:currentRoom,
+                length:length
+            });
+            socket.emit('leave', {
+                room:currentRoom,
+                length:length
+            })
+        };
+        logger.info(`${socket.id} DISConnected...`);
+        // socket.leave()
+        // io.sockets.to(room).emit('leaveRoom',{
+        //     roomId:room,
+        //     length:clients.length
+        // });        console.log(Object.values(io.sockets.adapter.rooms).length, 444444)
+    });
+});
+
+app.set('io', io);
 app.use(cors());
 
 // app.set('views', './views/')

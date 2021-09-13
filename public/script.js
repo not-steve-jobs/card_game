@@ -1,25 +1,32 @@
 let socket = io();
 
 socket.on('createRoom', function(room) {
-    let item = document.createElement('div');
-    // item.id = "::img";
-    item.style.cssText = 'display:inline-block;margin:10px';
-    console.log(room,789789)
-    let href= 'joinRoom/' + room._id
-    item.innerHTML = `<h1><a href=${href}>${room.name}</a></h1>
-                       <p>MAX: ${room.max_gamer_count}</p>
-                       <p id=count-${room._id}>${room.current_count}</p>`;
-    document.body.appendChild(item);
-    socket.emit('join', room);
+    console.log('createRoom socket - - -')
+    document.getElementById(`count-${room._id}`).innerHTML = room.current_count
 });
 
-socket.on('joinRoom', function(roomId) {
-    ++document.getElementById(`count-${roomId}`).innerHTML
+socket.on('joinRoom', function({room,length}) {
+   document.getElementById('currentCount').innerHTML = length;
+    console.log(room._id,777)
+    document.getElementById(`count-${room._id}`).innerHTML = length
+
 
 });
 
-socket.on('fff', function(room){
-    --document.getElementById(`count-${room._id}`).innerHTML
-    console.log(document.getElementById(`count-${room._id}`).innerHTML, 777777777)
+socket.on('leave', function ({room,length}){
+    if(room && length) {
+        document.getElementById(`count-${room._id}`).innerHTML = length
+    }
 
+});
+
+socket.on('leaveRoom', function ({room,length}){
+    console.log('leaveRoom')
+    console.log(room,666)
+    console.log(length,888)
+    if(length && document.getElementById('currentCount')) {
+        console.log(62020)
+        console.log(document.getElementById('currentCount'))
+        document.getElementById('currentCount').innerHTML = length;
+    }
 });

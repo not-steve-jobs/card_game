@@ -1,43 +1,37 @@
 const roomModel = require('../models/room');
 const { logger } = require('../utils/logger');
 const { roomValidate } = require('../validation/room');
+const {get,set} = require('../utils/cache')
 
 
 class Room {
     async create (req, res, next) {
-      try{
-          const {error, value} = roomValidate(req.body);
-          if (error){
-              logger.error('ValidationError', error.message);
-              return res.status(400).json({
-                  message: error
-              });
-          };
-          logger.info('Room creat started - - -');
-          const room = new roomModel({
-              ...value,
-              userId:req.user._id
-          });
-          await room.save();
-          logger.info('Room creat ended - - -');
+        try{
+            const {error, value} = roomValidate(req.body);
+            if (error){
+                logger.error('ValidationError', error.message);
+                return res.status(400).json({
+                    message: error
+                });
+            };
+            logger.info('Room creat started - - -');
+            const room = new roomModel({
+                ...value,
+                userId:req.user._id
+            });
+            await room.save();
+            logger.info('Room creat ended - - -');
 
-          //Socket
-          const io = req.app.get('socketio');
+            //Socket
+            const io = req.app.get('io');
+            io.emit('createRoom', room);
 
-          // io.sockets.on('connection', function(socket) {
-          //
-          // });
-
-
-          io.emit('createRoom', room);
-          io.to(room._id);
-          io.emit('joinRoom',room._id);
-          // const temp = io.sockets.adapter.rooms;
-          return res.status(200).json(room);
-      }  catch (e) {
-          logger.error(e);
-          next(e);
-      };
+            // const temp = io.sockets.adapter.rooms;
+            return res.status(200).json(room);
+        }  catch (e) {
+            logger.error(e);
+            next(e);
+        };
     };
 
     async joinRoom (req, res, next) {
@@ -48,31 +42,25 @@ class Room {
                 return res.status(404).json({
                     message: 'Room not found'
                 });
-            } else if (room.current_count == room.max_gamer_count){
-                return res.status(406).json({
-                    message: 'This Room is Full'
-                });
-            } else {
-                room.current_count++;
-                await room.save();
-            };
-            //Socket
-            const io = req.app.get('socketio');
-            io.emit('joinRoom',room._id);
-            io.to(room._id);
+            }
 
-            // console.log(io.engine.clientsCount)
+            const io = req.app.get('io');
+            const socket = req.app.get('socketio');
+            socket.join(room._id);
+            const clients = io.sockets.adapter.rooms[room._id];
 
-            io.on('connection', function (socket) {
-                console.log(`User ${socket.id} Connected...`);
-
-                socket.on('disconnect', function () {
-                    io.emit('fff', room)
-                    console.log('Socket disconnected: ' + socket.id)
-                }, room);
+            io.sockets.to(room._id).emit('joinRoom',{
+                roomId:room,
+                length:clients.length
             });
+            room.current_count = clients.length;
+            await room.save();
 
-            // return res.status(200).json(room);
+            set( "currentRoom", room, 10000 );
+            set( "length", clients.length, 10000 );
+
+            io.emit('createRoom', room)
+
             return res.render('joinRoom',{
                 room
             })
@@ -80,11 +68,6 @@ class Room {
             next(e);
         };
     };
-
-    // async leaveRoom (req, res, next) {
-    //     const io = req.app.get('socketio');
-    //     io.sockets.emit('disconnect', room._id)
-    // };
 
     async delete (req, res, next) {
         try{
@@ -111,15 +94,15 @@ class Room {
     };
 
     async getAllRooms (req, res, next) {
-      try{
-          const rooms = await roomModel.find({});
-          // return res.status(200).json(rooms);
-          return res.render('getAllRooms',{
-              rooms
-          })
-      }  catch (e) {
-          next(e);
-      };
+        try{
+            const rooms = await roomModel.find({});
+            // return res.status(200).json(rooms);
+            return res.render('getAllRooms',{
+                rooms
+            })
+        }  catch (e) {
+            next(e);
+        };
     };
 
     async getRoom (req, res, next) {
