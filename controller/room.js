@@ -36,36 +36,42 @@ class Room {
         };
     };
 
-    // async startGame (req, res, next){
-    //   try{
-    //       const cards = await cardModel.find({});
-    //       const user = req.user;
-    //       const { roomId:id } = req.params;
-    //       const room = await roomModel.findById(id);
-    //
-    //       const io = req.app.get('io');
-    //
-    //       const clients = io.sockets.adapter.rooms[room._id];
-    //       const gamers = Object.keys(clients.sockets);
-    //       const starter = gamers[Math.floor(Math.random()*gamers.length)];
-    //
-    //       const n = cards.length / gamers.length
-    //       let shuffled = cards.sort(() => 0.5 - Math.random());
-    //
-    //       let size = gamers.length;
-    //       let subarray = [];
-    //       for (let i = 0; i <Math.ceil(n); i++){
-    //           subarray[i] = shuffled.slice((i*size), (i*size) + size);
-    //       }
-    //       let obj = {};
-    //       for (let i=0; i<gamers.length; i++){
-    //           obj[gamers[i]] = subarray[i]
-    //       };
-    //
-    //   }catch (e) {
-    //       next(e);
-    //   };
-    // };
+    async startGame (req, res, next){
+      try{
+          const cards = await cardModel.find({});
+          const { roomId:id } = req.params;
+          const room = await roomModel.findById(id);
+
+          const io = req.app.get('io');
+
+          const clients = io.sockets.adapter.rooms[room._id];
+          const gamers = Object.keys(clients.sockets);
+          const starter = gamers[Math.floor(Math.random()*gamers.length)];
+
+          const n = cards.length / gamers.length
+          let shuffled = cards.sort(() => 0.5 - Math.random());
+
+          let size = gamers.length;
+          let subarray = [];
+          for (let i = 0; i <Math.ceil(n); i++){
+              subarray[i] = shuffled.slice((i*size), (i*size) + size);
+          }
+          let gamersWitchCards = {};
+          for (let i=0; i<gamers.length; i++){
+              gamersWitchCards[gamers[i]] = subarray[i]
+          };
+
+          //Cards Started Used
+          for (let key in gamersWitchCards){
+              if (gamersWitchCards[key].length ===0) break
+              gamersWitchCards[key] = gamersWitchCards[key].slice(1)
+          };
+          console.log(`Game Over::: Winner ------- ${starter}`)
+
+      }catch (e) {
+          next(e);
+      };
+    };
 
     async joinRoom (req, res, next) {
         try{
@@ -97,39 +103,6 @@ class Room {
             set( "length", clients.length, 10000 );
 
             io.emit('createRoom', room);
-
-            ///
-            let cards = await cardModel.find({});
-            const user = req.user;
-
-            let gamers = Object.keys(clients.sockets);
-            gamers.sort(() => Math.random() - 0.5);
-            // const starter = gamers[Math.floor(Math.random()*gamers.length)];
-            const starter = gamers[0];
-
-            const n = cards.length / gamers.length
-            let shuffled = cards.sort(() => 0.5 - Math.random());
-
-            let size = gamers.length;
-            let subarray = [];
-            for (let i = 0; i <Math.ceil(n); i++){
-                subarray[i] = shuffled.slice((i*size), (i*size) + size);
-            }
-
-            let gamersWitchCards = {};
-            for (let i=0; i<gamers.length; i++){
-                gamersWitchCards[gamers[i]] = subarray[i]
-            };
-
-            //Cards Started Used
-            for (let key in gamersWitchCards){
-                if (gamersWitchCards[key].length ===0) break
-                gamersWitchCards[key] = gamersWitchCards[key].slice(1)
-            };
-            console.log(`Game Over::: Winner ------- ${starter}`)
-
-
-            ///
 
             return res.render('joinRoom',{
                 room
