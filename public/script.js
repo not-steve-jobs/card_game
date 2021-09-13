@@ -5,8 +5,12 @@ socket.on('createRoom', function(room) {
 });
 
 socket.on('joinRoom', function({room,length}) {
-   document.getElementById('currentCount').innerHTML = length;
+    document.getElementById('currentCount').innerHTML = length;
     document.getElementById(`count-${room._id}`).innerHTML = length
+    if (document.getElementById('currentCount').innerHTML == 2){
+        alert('game start')
+    }
+    console.log(room)
 });
 
 socket.on('leave', function ({room,length}){

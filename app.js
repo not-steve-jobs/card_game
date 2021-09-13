@@ -42,11 +42,6 @@ io.on('connection', function (socket) {
             })
         };
         logger.info(`${socket.id} DISConnected...`);
-        // socket.leave()
-        // io.sockets.to(room).emit('leaveRoom',{
-        //     roomId:room,
-        //     length:clients.length
-        // });        console.log(Object.values(io.sockets.adapter.rooms).length, 444444)
     });
 });
 

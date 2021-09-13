@@ -93,7 +93,7 @@ class Room {
             const clients = io.sockets.adapter.rooms[room._id];
 
             io.sockets.to(room._id).emit('joinRoom',{
-                roomId:room,
+                room:room,
                 length:clients.length
             });
             room.current_count = clients.length;
