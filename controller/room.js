@@ -112,14 +112,6 @@ class Room {
         };
     };
 
-    async createCard (req, res) {
-        const card = new cardModel({
-            name: req.body.name
-        })
-        await card.save()
-        return res.status(200).json(card)
-    }
-
     async delete (req, res, next) {
         try{
             const { id } = req.params;
