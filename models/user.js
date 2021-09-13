@@ -23,6 +23,9 @@ const userSchema = new Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    cards: {
+        type: Array,
     }
 });
 

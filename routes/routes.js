@@ -16,8 +16,8 @@ router.post('/create', auth, Room.create);
 router.delete('/delete/:id', Room.delete);
 router.get('/', Room.getAllRooms);
 router.get('/get-room/:id', Room.getRoom);
-// router.post('/joinRoom/:roomId', Room.joinRoom);
 router.get('/join-room/:roomId', Room.joinRoom);
+router.post('/card', Room.createCard)
 
 
 module.exports = router;
