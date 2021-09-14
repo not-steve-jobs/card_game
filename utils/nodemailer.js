@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport(
         // port: 465,
         // secure: true, // true for 465, false for other ports
         // auth: {
-        //     user: 'sendmail.testovich@mail.ru',
+        //     user: process.env.EMAIL_USER,
         //     pass: process.env.EMAIL_PASSWORD
         // }
         host: "smtp.mailtrap.io",

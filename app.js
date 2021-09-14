@@ -49,6 +49,10 @@ io.on('connection', function (socket) {
 app.set('io', io);
 app.use(cors());
 
+// app.set('views', './views/')
+app.set('views', path.join(__dirname, '/views/'))
+app.set('view engine', 'ejs')
+
 app.use(express.static("./public"))
 
 //body-parser
