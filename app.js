@@ -27,11 +27,12 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', async function () {
         if(length) {
+            console.log('---------')
             length--;
             if(currentRoom && currentRoom._id)
             await roomModel.update({_id:currentRoom._id},{
                 current_count:length
-            })
+            });
             socket.to(currentRoom._id).emit('leaveRoom',{
                 room:currentRoom,
                 length:length
@@ -39,18 +40,14 @@ io.on('connection', function (socket) {
             socket.emit('leave', {
                 room:currentRoom,
                 length:length
-            })
+            });
         };
-        logger.info(`${socket.id} DISConnected...`);
+        console.log(`${socket.id} DISConnected...`);
     });
 });
 
 app.set('io', io);
 app.use(cors());
-
-// app.set('views', './views/')
-app.set('views', path.join(__dirname, '/views/'))
-app.set('view engine', 'ejs')
 
 app.use(express.static("./public"))
 

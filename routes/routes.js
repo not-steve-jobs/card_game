@@ -13,10 +13,10 @@ router.get('/confirm/:id', User.verify);
 
 //Room routes
 router.post('/create', auth, Room.create);
-router.delete('/delete/:id', Room.delete);
-router.get('/', Room.getAllRooms);
-router.get('/get-room/:id', Room.getRoom);
-router.get('/join-room/:roomId', Room.joinRoom);
+router.delete('/delete/:id', auth, Room.delete);
+router.get('/', auth, Room.getAllRooms);
+router.get('/get-room/:id',auth, Room.getRoom);
+router.get('/join-room/:roomId',auth, Room.joinRoom);
 
 
 module.exports = router;
