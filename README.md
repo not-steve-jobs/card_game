@@ -9,3 +9,6 @@ Install
 3. Create a .env file, and add to it 'PORT | TOKEN_KEY | DB_URL | TEST_MAIL | TEST_PASS |'
 
 4. npm run dev
+
+-----------------------------------------
+here is  Back-end, and the front-end is a very small part that works unstable
